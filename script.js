@@ -1,71 +1,104 @@
-  
-const button = document.querySelector(".btn");
-const textArea = document.querySelector("#text-area");
+        document.addEventListener('DOMContentLoaded', () => {
+            const button = document.querySelector(".btn");
+            const textArea = document.querySelector("#text-area");
+            const color = document.querySelector("#color");
+            const notesContainer = document.querySelector(".notes_container");
+            let notes = [];
 
-const color = document.querySelector("#color");
-const notesContainer = document.querySelector(".notes_container");
-const button2 = document.querySelectorAll(".buttons");
-let count = 0;
-button.addEventListener("click", () => {
-    
-    if (textArea.value === "") {
-    
-        alert("Please enter some text");
-        return;
-        
+            // Load notes from localStorage
+            if (localStorage.getItem('stickyNotes')) {
+                notes = JSON.parse(localStorage.getItem('stickyNotes'));
+                renderNotes();
+            }
 
-    }
-    const note = document.createElement("div");
-    note.classList.add("note");
-    note.style.backgroundColor = color.value;
-    note.style.boxShadow = "0 0 10px rgba(0,0,0,0.2)";
-    note.style.padding = "10px";
-    note.style.margin = "10px 10px 10px 10px";
-    note.style.display = "inline-flex";
-    note.style.float ="left";
-    note.style.alignItems = "center";
-    note.style.gap="30px";
-    note.style.justifyContent = "space-between";
-    note.style.fontSize = "12px";
-    note.style.borderRadius = "10px";
-    note.style.padding = "20px";
-    note.style.cursor = "pointer";
-    note.style.transition = "background-color 0.3s ease";
+            button.addEventListener("click", addNote);
 
-    note.innerHTML = `
-    <p style="color: ${color.value="white"}">${textArea.value} </p>
-        <button style="backgroundcolor :none";class="buttons" onclick="deleteNote(this)">          ❌</button> `
+            function addNote() {
+                if (textArea.value.trim() === "") {
+                    showAlert("Please enter some text");
+                    return;
+                }
 
-    notesContainer.appendChild(note);
-    textArea.value = "";
-    count++;
-    playClickSound2();
-    console.log(count);
-});
+                const newNote = {
+                    id: Date.now(),
+                    text: textArea.value,
+                    color: color.value,
+                    createdAt: new Date().toISOString()
+                };
 
-//  for delete 
+                notes.unshift(newNote);
+                saveNotes();
+                renderNotes();
+                textArea.value = "";
+                playAddSound();
+            }
 
-function deleteNote(element) {
-    
-    element.parentElement.remove();
+            function renderNotes() {
+                if (notes.length === 0) {
+                    notesContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-sticky-note"></i>
+                            <p>No notes yet. Add your first note!</p>
+                        </div>
+                    `;
+                    return;
+                }
 
-    count--;
-    console.log(count);
-    playClickSound();
-}
+                notesContainer.innerHTML = notes.map(note => `
+                    <div class="note" style="background-color: ${note.color}">
+                        <p>${note.text}</p>
+                        <button onclick="deleteNote(${note.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
 
+            function deleteNote(id) {
+                notes = notes.filter(note => note.id !== id);
+                saveNotes();
+                renderNotes();
+                playClickSound();
+            }
 
-function playClickSound() {
-    const sound = document.getElementById('click-sound');
-    sound.currentTime = 0; 
-    sound.play(); 
-}
- 
+            function saveNotes() {
+                localStorage.setItem('stickyNotes', JSON.stringify(notes));
+            }
 
-function playClickSound2() {
-    const sound = document.getElementById('click-sound2');
-    sound.currentTime = 0; // Reset the audio to the beginning
-    sound.play(); // Play the sound
-}
+            function showAlert(message) {
+                const alert = document.createElement('div');
+                alert.style.position = 'fixed';
+                alert.style.top = '20px';
+                alert.style.left = '50%';
+                alert.style.transform = 'translateX(-50%)';
+                alert.style.backgroundColor = '#dc3545';
+                alert.style.color = 'white';
+                alert.style.padding = '10px 20px';
+                alert.style.borderRadius = '5px';
+                alert.style.zIndex = '1000';
+                alert.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+                alert.textContent = message;
+                document.body.appendChild(alert);
+                
+                setTimeout(() => {
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.remove(), 300);
+                }, 2000);
+            }
 
+            function playClickSound() {
+                const sound = document.getElementById('click-sound');
+                sound.currentTime = 0;
+                sound.play().catch(e => console.log("Sound playback prevented:", e));
+            }
+
+            function playAddSound() {
+                const sound = document.getElementById('add-sound');
+                sound.currentTime = 0;
+                sound.play().catch(e => console.log("Sound playback prevented:", e));
+            }
+
+            // Make functions available globally
+            window.deleteNote = deleteNote;
+        });
 
