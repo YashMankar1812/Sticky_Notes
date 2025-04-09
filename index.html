@@ -4,28 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sticky Notes</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <div class="left_container">
-            <h1>📔Sticky Notes 📔</h1>
-            <textarea name="" id="text-area" class="text-area" cols="60" rows="10" placeholder="Add ur beautiful thoughts ..... "></textarea><br>
-            <label for="color">Add Color:</label>
-            <input type="color" name="" id="color" class="color"  >
+            <h1><i class="fas fa-sticky-note"></i> Sticky Notes</h1>
+            <textarea id="text-area" class="text-area" placeholder="Write your beautiful thoughts here..."></textarea>
+            <div class="color-picker-container">
+                <label for="color" class="color-label">Note Color:</label>
+                <input type="color" id="color" class="color" value="#4fc3a1">
+            </div>
             <div id="btn" class="btn">
-                <button>Add Note</button>
+                <button><i class="fas fa-plus"></i> Add Note</button>
+            </div>
         </div>
+        <div class="right_container">
+            <h2><i class="fas fa-clipboard-list"></i> Your Notes</h2>
+            <div class="notes_container" id="notes_container">
+                <div class="empty-state">
+                    <i class="fas fa-sticky-note"></i>
+                    <p>No notes yet. Add your first note!</p>
+                </div>
+            </div>
         </div>
-          <div class="right_container">
-            <h2> 📝 Your Note here .. </h2>
-            <div class="notes_container"></div>
-          </div>
     </div>
-    <audio id="click-sound2" src="assets/click_effect-86995.mp3"></audio>
-    <audio id="click-sound" src="assets/spacebar-click-keyboard-199448.mp3"></audio>
+    <audio id="click-sound" src="assets/click_effect-86995.mp3"></audio>
+    <audio id="add-sound" src="assets/spacebar-click-keyboard-199448.mp3"></audio>
     <script src="script.js"></script>
 </body>
 </html>
-
 
